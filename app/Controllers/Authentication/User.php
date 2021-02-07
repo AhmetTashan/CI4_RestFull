@@ -22,6 +22,7 @@ class User extends BaseController
 	 * @name login
 	 * @return mixed
 	 * @throws \ReflectionException
+	 * @parametre username, password
 	 */
 	public function login()
 	{
@@ -56,6 +57,7 @@ class User extends BaseController
 	 * @name register
 	 * @return mixed
 	 * @throws \ReflectionException
+	 * @parametre username, password, fullname, email
 	 */
 	public function register()
 	{
@@ -106,6 +108,7 @@ class User extends BaseController
 	/**
 	 * @name logout
 	 * @return mixed
+	 * @parametre token, user_id
 	 */
 	public function logout()
 	{
@@ -116,7 +119,7 @@ class User extends BaseController
 		$form_validation = \Config\Services::validation();
 		
 		if (!$form_validation->run((array)$payload, 'user_logout_validation')) {
-			print_r($form_validation->getErrors());
+			return $this->respond($form_validation->getErrors(), 203);
 		}
 		
 		$tokenModel = $this->tokenModel->tokenDelete($payload);
@@ -137,7 +140,25 @@ class User extends BaseController
 	
 	public function resetPassword()
 	{
-	
+		$payload = (object)[];
+		$payload->currentpassword = $this->jsonData->currentpassword;
+		$payload->password = $this->jsonData->password;
+		$payload->pass_confirm = $this->jsonData->pass_confirm;
+
+		$form_validation = \Config\Services::validation();
+
+		if (!$form_validation->run((array)$payload, 'user_reset_password')) {
+			return $this->respond($form_validation->getErrors(), 203);
+		}
+
+		$token = $this->request->getHeaderLine('Authorization');
+		$token = explode('Bearer ', $token)[1];
+
+		$tokenModel = new \App\Models\Authentication\TokenModel();
+		$user_id = $tokenModel->user_id($token);
+
+
+
 	}
 	
 	

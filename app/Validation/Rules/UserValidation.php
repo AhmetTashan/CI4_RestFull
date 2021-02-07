@@ -16,7 +16,7 @@ trait UserValidation
     public $user_register_validation = [
         'username' => [
             'label' => 'Kullanıcı Adı',
-            'rules' => 'required|alpha_numeric|min_length[3]|max_length[64]|is_unique[users.username]'
+            'rules' => 'trim|required|alpha_numeric|min_length[3]|max_length[64]|is_unique[users.username]'
         ],
         'password' => [
             'label' => 'Parola',
@@ -51,5 +51,20 @@ trait UserValidation
                 'max_length' => '{field} {param} karekterden fazla olamaz.'
             ]
         ]
+    ];
+
+    public $user_reset_password = [
+    	'currentpassword' => [
+    		'label' => 'Mevcut Parola',
+		    'rules' => 'required'
+	    ],
+    	'password' => [
+    		'label' => 'Yeni Parola',
+		    'rules' => 'required|min_length[6]'
+	    ],
+    	'pass_confirm' => [
+    		'label' => 'Parolayı Onayla',
+		    'rules' => 'required|matches[password]'
+	    ],
     ];
 }

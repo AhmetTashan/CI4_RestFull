@@ -22,7 +22,7 @@ class AjaxToken implements FilterInterface
 		
 		if ($arguments) {
 			
-			$tokenModel = $tokenModel = new \App\Models\Authentication\TokenModel();
+			$tokenModel = new \App\Models\Authentication\TokenModel();
 			$tokenFeedback = $tokenModel->tokenControl($arguments);
 			
 			if ($tokenFeedback->status === 'error') {

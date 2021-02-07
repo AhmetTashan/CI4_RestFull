@@ -79,8 +79,12 @@ class TokenModel extends Model
 		
 		return $token;
 	}
-	
-	
+
+	/**
+	 * @param $payload
+	 * @return object
+	 * @throws \ReflectionException
+	 */
 	public function tokenDelete($payload)
 	{
 		$feedback = (object)[];
@@ -121,5 +125,20 @@ class TokenModel extends Model
 		}
 		
 		return $feedback;
+	}
+
+	/**
+	 * @param $token
+	 * @return mixed
+	 */
+	public function user_id($token)
+	{
+		$control = $this
+			->select('user_id')
+			->where('access_token', $token)
+			->get()
+			->getResultObject();
+
+		return $control[0]->user_id;
 	}
 }

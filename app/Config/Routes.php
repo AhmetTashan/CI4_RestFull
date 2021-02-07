@@ -34,7 +34,7 @@ $routes->get('/', 'Home::index');
 $routes->post('login', 'Authentication/User::login');
 $routes->post('register', 'Authentication/User::register');
 $routes->post('logout', 'Authentication/User::logout');
-$routes->post('resetpassword', 'Authentication/User::resetPassword');
+$routes->post('resetpassword', 'Authentication/User::resetPassword', ['filter' => 'token']);
 $routes->post('email', 'Authentication/User::email');
 
 $routes->resource('post');
