@@ -141,23 +141,47 @@ class User extends BaseController
 	public function resetPassword()
 	{
 		$payload = (object)[];
-		$payload->currentpassword = $this->jsonData->currentpassword;
+		$feedback = (object)[];
+
+		$feedback->status = 'error';
+		$feedback->code = 'resetpassword';
+
+		$payload->current_password = $this->jsonData->current_password;
 		$payload->password = $this->jsonData->password;
-		$payload->pass_confirm = $this->jsonData->pass_confirm;
+		$payload->confirm_password = $this->jsonData->confirm_password;
 
 		$form_validation = \Config\Services::validation();
-
+/*
 		if (!$form_validation->run((array)$payload, 'user_reset_password')) {
-			return $this->respond($form_validation->getErrors(), 203);
+			$feedback->error_code = 'ResetPasswordFormValidation';
+			$feedback->message = $form_validation->getErrors();
+			return $this->respond($feedback, 203);
+		}*/
+
+		helper('getuserid');
+		$getUser = $this->model->asObject()->find(getUserId());
+
+
+		// TODO: karşılaştırma operatoru sorunu burada kaldık
+		if ( $payload->current_password !== $payload->password ) {
+			echo "başarılı";
+		} else {
+			echo "aynı olmamalı";
 		}
 
-		$token = $this->request->getHeaderLine('Authorization');
-		$token = explode('Bearer ', $token)[1];
+		/*if ( password_verify($payload->current_password, $getUser->password) ) {
 
-		$tokenModel = new \App\Models\Authentication\TokenModel();
-		$user_id = $tokenModel->user_id($token);
+			if ( $payload->current_password !== $payload->password ) {
+				echo "başarılı";
+			} else {
+				echo "aynı olmamalı";
+			}
 
-
+		} else {
+			$feedback->error_code = 'PasswordNotMatch';
+			$feedback->message = 'Girmiş olduğunuz parola ile Mevcut Parolanız uyuşmuyor';
+			return $this->respond($feedback, 203);
+		}*/
 
 	}
 	

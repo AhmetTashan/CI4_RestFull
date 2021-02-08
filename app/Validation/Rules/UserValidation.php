@@ -54,15 +54,15 @@ trait UserValidation
     ];
 
     public $user_reset_password = [
-    	'currentpassword' => [
+    	'current_password' => [
     		'label' => 'Mevcut Parola',
 		    'rules' => 'required'
 	    ],
     	'password' => [
-    		'label' => 'Yeni Parola',
+    		'label' => 'Parola',
 		    'rules' => 'required|min_length[6]'
 	    ],
-    	'pass_confirm' => [
+    	'confirm_password' => [
     		'label' => 'Parolayı Onayla',
 		    'rules' => 'required|matches[password]'
 	    ],
