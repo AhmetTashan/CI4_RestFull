@@ -51,7 +51,7 @@ class TokenModel extends Model
 			}
 			
 		} else {
-			$feedback->code = 'TokenNotFound';
+			$feedback->code = 'TokenNotFoundInDatabase';
 		}
 		
 		return $feedback;
@@ -115,8 +115,8 @@ class TokenModel extends Model
 				if ($builder != 1) {
 					
 					$feedback->status = 'error';
-					$feedback->code = 'token';
 					$feedback->code_code = 'token';
+					$feedback->code = 'TokenNotDelete';
 					$feedback->message = 'Oturumunuz kapatılıtken bir sorun oluştu.';
 					$feedback->page_status = 203;
 				}

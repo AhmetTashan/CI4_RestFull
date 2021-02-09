@@ -29,7 +29,7 @@ class UserModel extends Model
 	{
 		$feedback = (object)[];
 		$feedback->status = 'error';
-		$feedback->code = 'login';
+		$feedback->error_code = 'login';
 		
 		$builder = $this->select('id, email, fullname, username, password, status')
 			->where('username', $data->username)
@@ -56,7 +56,7 @@ class UserModel extends Model
 					$feedback->page_status = 202;
 					
 				} else {
-					$feedback->error_code = 'PasswordNotMatch';
+					$feedback->code = 'PasswordNotMatch';
 					$feedback->username = $data->username;
 					$feedback->message = 'Girmiş olduğunuz parola uyuşmuyor.';
 					$feedback->page_status = 203;
@@ -64,19 +64,19 @@ class UserModel extends Model
 				
 			} elseif ($builder[0]->status === 'FORCEPASSRESET'){
 				
-				$feedback->error_code = 'UserForcePasswordReset';
+				$feedback->code = 'UserForcePasswordReset';
 				$feedback->message = 'Eposta adresinize gönderilen "Parolamı Sıfırla" butonuna tıklayın ve parolanızı sıfırladıktan sonra tekrar giriş yapmayı deneyin.';
 				$feedback->page_status = 401;
 				
 			} elseif ($builder[0]->status === 'NOTACTIVE'){
 				
-				$feedback->error_code = 'UserNotActive';
+				$feedback->code = 'UserNotActive';
 				$feedback->message = 'Eposta adresinize gönderilen "Eposta Adresimi Doğrula" butonuna tıklandıktan sonra üyeliğiniz aktif olmaktadır.';
 				$feedback->page_status = 401;
 				
 			} else {
 				
-				$feedback->error_code = 'UserBanned';
+				$feedback->code = 'UserBanned';
 				$feedback->message = 'Yönetici tarafından üyeliğiniz askıya alınmıştır.';
 				$feedback->page_status = 403;
 				
@@ -84,8 +84,8 @@ class UserModel extends Model
 			
 		} else {
 			
-			$feedback->error_code = 'UserNoFound';
-			$feedback->message = 'Lütfen bilgilerinizi kontrol edin ve tekrar giriş yapın';
+			$feedback->code = 'UserNoFound';
+			$feedback->message = 'Lütfen bilgilerinizi kontrol edin ve tekrar giriş yapın.';
 			$feedback->page_status = 404;
 		}
 		

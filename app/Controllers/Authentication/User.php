@@ -37,8 +37,8 @@ class User extends BaseController
 		if (!$form_validation->run((array)$payload, 'user_login_validation')) {
 			$data = [
 				'status' => 'error',
-				'code' => 'login',
-				'error_code' => 'LoginFormValidation',
+				'error_code' => 'login',
+				'code' => 'LoginFormValidation',
 				'message' => $form_validation->getErrors()
 			];
 			
@@ -66,7 +66,7 @@ class User extends BaseController
 		
 		$feedback = (object)[];
 		$feedback->status = 'error';
-		$feedback->code = 'register';
+		$feedback->error_code = 'register';
 		
 		$form_validation = \Config\Services::validation();
 		
@@ -77,7 +77,7 @@ class User extends BaseController
 		
 		if (!$form_validation->run((array)$payload, 'user_register_validation')) {
 			
-			$feedback->error_code = 'RegisterFormValidation';
+			$feedback->code = 'RegisterFormValidation';
 			$feedback->message = $form_validation->getErrors();
 			
 			return $this->respond($feedback, 203);
@@ -97,7 +97,7 @@ class User extends BaseController
 			$page_status = 202;
 			
 		} else {
-			$feedback->error_code = 'ProblemRegisteringUser ';
+			$feedback->code = 'ProblemRegisteringUser ';
 			$feedback->message = 'Kullanıcı kayıt olurken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.';
 			$page_status = 203;
 		}
@@ -119,7 +119,13 @@ class User extends BaseController
 		$form_validation = \Config\Services::validation();
 		
 		if (!$form_validation->run((array)$payload, 'user_logout_validation')) {
-			return $this->respond($form_validation->getErrors(), 203);
+			$data = [
+				'status' => 'error',
+				'error_code' => 'logout',
+				'code' => 'LogoutFormValidation',
+				'message' => $form_validation->getErrors()
+			];
+			return $this->respond($data, 203);
 		}
 		
 		$tokenModel = $this->tokenModel->tokenDelete($payload);
@@ -136,53 +142,64 @@ class User extends BaseController
 	{
 		
 	}
-	
-	
+
+	/**
+	 * @return mixed
+	 * @throws \ReflectionException
+	 * @parametre current_password, password, confirm_password
+	 */
 	public function resetPassword()
 	{
 		$payload = (object)[];
 		$feedback = (object)[];
 
 		$feedback->status = 'error';
-		$feedback->code = 'resetpassword';
+		$feedback->error_code = 'resetpassword';
+		$page_code = 203;
 
 		$payload->current_password = $this->jsonData->current_password;
 		$payload->password = $this->jsonData->password;
 		$payload->confirm_password = $this->jsonData->confirm_password;
 
 		$form_validation = \Config\Services::validation();
-/*
+
 		if (!$form_validation->run((array)$payload, 'user_reset_password')) {
-			$feedback->error_code = 'ResetPasswordFormValidation';
+			$feedback->code = 'ResetPasswordFormValidation';
 			$feedback->message = $form_validation->getErrors();
 			return $this->respond($feedback, 203);
-		}*/
+		}
 
 		helper('getuserid');
 		$getUser = $this->model->asObject()->find(getUserId());
 
 
-		// TODO: karşılaştırma operatoru sorunu burada kaldık
-		if ( $payload->current_password !== $payload->password ) {
-			echo "başarılı";
-		} else {
-			echo "aynı olmamalı";
-		}
+		if ( password_verify($payload->current_password, $getUser->password) ) {
 
-		/*if ( password_verify($payload->current_password, $getUser->password) ) {
-
-			if ( $payload->current_password !== $payload->password ) {
-				echo "başarılı";
+			if ( $payload->current_password === $payload->password ) {
+				$feedback->code = 'PasswordSame';
+				$feedback->message = 'Mevcut paroladan farklı bir parola girin.';
 			} else {
-				echo "aynı olmamalı";
+				$data = [
+					'password' => password_hash($payload->password, PASSWORD_DEFAULT)
+				];
+				$builder = $this->model->update(getUserId(), $data);
+
+				if ($builder) {
+					$feedback->status = 'success';
+					unset($feedback->error_code);
+					$feedback->message = 'Yeni parolanız kayıt edildi.';
+				} else {
+					$feedback->code = 'CouldNotChangePassword';
+					$feedback->message = 'Parola değiştirme gerçekleştirilemedi.';
+				}
 			}
 
 		} else {
-			$feedback->error_code = 'PasswordNotMatch';
-			$feedback->message = 'Girmiş olduğunuz parola ile Mevcut Parolanız uyuşmuyor';
-			return $this->respond($feedback, 203);
-		}*/
+			$feedback->code = 'PasswordNotMatch';
+			$feedback->message = 'Girmiş olduğunuz parola ile Mevcut Parolanız uyuşmuyor.';
+		}
 
+		return $this->respond($feedback, $page_code);
 	}
 	
 	
