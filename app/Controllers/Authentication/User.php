@@ -140,7 +140,10 @@ class User extends BaseController
 	
 	public function forgotPassword()
 	{
-		
+		$payload = (object)[];
+		$feedback = (object)[];
+
+
 	}
 
 	/**
